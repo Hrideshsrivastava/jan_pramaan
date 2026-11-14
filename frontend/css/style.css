@@ -1,0 +1,101 @@
+/* Jan Pramaan - one simple stylesheet for all pages */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
+
+header {
+  background: #1f3b57;
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+header h1 { font-size: 20px; margin: 0; }
+header nav a { color: #cfe3f7; margin-right: 12px; text-decoration: none; }
+header nav a:hover { text-decoration: underline; }
+header .wallet { margin-left: auto; font-size: 13px; }
+#account { font-family: monospace; margin-left: 8px; }
+
+main { max-width: 1100px; margin: 20px auto; padding: 0 16px; }
+
+.card {
+  background: white;
+  border: 1px solid #dde3e8;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card h2 { margin-top: 0; font-size: 18px; }
+.card h3 { font-size: 15px; margin: 14px 0 6px; }
+
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border: 1px solid #dde3e8; padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background: #eef2f5; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover { background: #f0f7ff; }
+
+label { display: block; margin: 8px 0 4px; font-size: 14px; }
+input, select { padding: 6px; font-size: 14px; width: 100%; max-width: 420px; }
+input[type="file"] { padding: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
+.row input, .row select { width: auto; }
+
+button {
+  background: #2d6cdf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 2px 4px 2px 0;
+}
+button:hover { background: #1f55b8; }
+button:disabled { background: #9aa9bd; cursor: wait; }
+button.secondary { background: #6c7a89; }
+button.danger { background: #c0392b; }
+
+#error, #message {
+  display: none;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+#error { background: #fdecea; color: #a12622; border: 1px solid #f5c2bd; }
+#message { background: #e8f6ec; color: #1e6b34; border: 1px solid #bfe5c9; }
+
+.mono, .hash { font-family: monospace; font-size: 12px; word-break: break-all; }
+.muted { color: #777; font-size: 13px; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  background: #e1e7ee;
+}
+.badge.s0 { background: #e1e7ee; }            /* Created */
+.badge.s1 { background: #fff1c2; }            /* CompletionClaimed */
+.badge.s2, .badge.s3 { background: #d6e8ff; } /* Commit, Reveal */
+.badge.s4 { background: #d4f2dc; }            /* Verified */
+.badge.s5 { background: #fbd5d1; }            /* Failed */
+.badge.s6 { background: #b9e6c6; }            /* Paid */
+
+.result { font-weight: bold; margin-left: 6px; }
+.result.ok { color: #1e6b34; }
+.result.bad { color: #a12622; }
+
+.secret-box {
+  background: #fff8dc;
+  border: 1px dashed #c9a400;
+  padding: 8px;
+  margin-top: 6px;
+  font-family: monospace;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contractor - Jan Pramaan</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Jan Pramaan</h1>
+    <nav>
+      <a href="index.html">Projects</a>
+      <a href="apply.html">Apply</a>
+      <a href="government.html">Government</a>
+      <a href="contractor.html">Contractor</a>
+      <a href="verifier.html">Verifier</a>
+    </nav>
+    <div class="wallet">
+      <button id="connectBtn">Connect MetaMask</button>
+      Account:<span id="account">not connected</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="error"></div>
+    <div id="message"></div>
+
+    <div class="card">
+      <h2>Contractor dashboard</h2>
+      <p id="contractorInfo" class="muted"></p>
+      <p>Your balance: <b id="myBalance">-</b></p>
+    </div>
+
+    <div class="card">
+      <h2>My projects</h2>
+      <div id="myProjects"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/contractor.js"></script>
+</body>
+</html>
