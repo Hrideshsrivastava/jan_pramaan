@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects - Jan Pramaan</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Jan Pramaan</h1>
+    <nav>
+      <a href="index.html">Projects</a>
+      <a href="apply.html">Apply</a>
+      <a href="government.html">Government</a>
+      <a href="contractor.html">Contractor</a>
+      <a href="verifier.html">Verifier</a>
+    </nav>
+    <div class="wallet">
+      <button id="connectBtn">Connect MetaMask</button>
+      Account:<span id="account">not connected</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="error"></div>
+    <div id="message"></div>
+
+    <div class="card">
+      <h2>All projects <span class="muted" id="countInfo"></span></h2>
+      <p class="muted">Click a project to see its verifiers, evidence, panel, votes and reports.</p>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Location</th><th>Status</th><th>Budget</th><th>Round</th></tr>
+        </thead>
+        <tbody id="projectRows"></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="detailCard" style="display:none">
+      <h2 id="detailTitle"></h2>
+      <div id="detail"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

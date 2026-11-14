@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apply as verifier - Jan Pramaan</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Jan Pramaan</h1>
+    <nav>
+      <a href="index.html">Projects</a>
+      <a href="apply.html">Apply</a>
+      <a href="government.html">Government</a>
+      <a href="contractor.html">Contractor</a>
+      <a href="verifier.html">Verifier</a>
+    </nav>
+    <div class="wallet">
+      <button id="connectBtn">Connect MetaMask</button>
+      Account:<span id="account">not connected</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="error"></div>
+    <div id="message"></div>
+
+    <div class="card">
+      <h2>Apply to become a verifier</h2>
+      <p class="muted">Your name and ID number stay on the backend only. They never go on the blockchain.
+        The government checks your application and then registers your wallet.</p>
+      <form id="applyForm">
+        <label for="wallet">Wallet address</label>
+        <input id="wallet" placeholder="0x..." required>
+        <label for="name">Full name</label>
+        <input id="name" required>
+        <label for="age">Age</label>
+        <input id="age" type="number" min="1" required>
+        <label for="idNumber">ID number (12 digits)</label>
+        <input id="idNumber" maxlength="12" required>
+        <p><button type="submit" id="applyBtn">Submit application</button></p>
+      </form>
+      <p id="applyStatus"></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/apply.js"></script>
+</body>
+</html>

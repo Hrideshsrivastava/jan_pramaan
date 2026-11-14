@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Government - Jan Pramaan</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Jan Pramaan</h1>
+    <nav>
+      <a href="index.html">Projects</a>
+      <a href="apply.html">Apply</a>
+      <a href="government.html">Government</a>
+      <a href="contractor.html">Contractor</a>
+      <a href="verifier.html">Verifier</a>
+    </nav>
+    <div class="wallet">
+      <button id="connectBtn">Connect MetaMask</button>
+      Account:<span id="account">not connected</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="error"></div>
+    <div id="message"></div>
+
+    <div class="card">
+      <h2>Government dashboard</h2>
+      <p id="adminInfo" class="muted"></p>
+      <p>Contract balance: <b id="contractBalance">-</b></p>
+    </div>
+
+    <div class="card">
+      <h2>Add contractor</h2>
+      <div class="row">
+        <input id="contractorAddr" placeholder="Contractor address 0x..." size="46">
+        <button id="addContractorBtn">Add contractor</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Verifier applications</h2>
+      <table>
+        <thead><tr><th>Wallet</th><th>Name</th><th>Age</th><th>ID (last 4)</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="applicantRows"></tbody>
+      </table>
+      <h3>Registered verifiers</h3>
+      <table>
+        <thead><tr><th>Address</th><th>Reputation</th><th>Tasks done</th><th>Penalties</th></tr></thead>
+        <tbody id="verifierRows"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Create project</h2>
+      <label for="pName">Name</label>
+      <input id="pName" placeholder="Village road, phase 1">
+      <label for="pLocation">Location</label>
+      <input id="pLocation" placeholder="Sector 4, Lucknow">
+      <label for="pDetails">Details file (PDF, photo or JSON)</label>
+      <input id="pDetails" type="file">
+      <label for="pContractor">Contractor address</label>
+      <input id="pContractor" placeholder="0x...">
+      <label for="pBudget">Budget (ETH)</label>
+      <input id="pBudget" type="number" step="any" value="25">
+      <label for="pReward">Reward per verifier (ETH)</label>
+      <input id="pReward" type="number" step="any" value="0.1">
+      <p class="muted" id="pPreview"></p>
+      <p><button id="createBtn">Create project</button></p>
+    </div>
+
+    <div class="card">
+      <h2>Projects</h2>
+      <p class="muted">Phase buttons only move a project forward. They cannot change votes or choose verifiers.</p>
+      <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Status</th><th>Round</th><th>Contractor gets</th><th>Open reports</th><th>Actions</th></tr></thead>
+        <tbody id="projectRows"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Reports</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Project / round</th><th>Reporter</th><th>Accused</th><th>Uphold / Reject</th><th>Result</th><th>Action</th></tr></thead>
+        <tbody id="reportRows"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/government.js"></script>
+</body>
+</html>
