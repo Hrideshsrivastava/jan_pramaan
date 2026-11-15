@@ -24,7 +24,7 @@ async function loadGovernment() {
 const addContractorBtn = document.getElementById("addContractorBtn");
 addContractorBtn.onclick = () => run(addContractorBtn, async () => {
   const addr = document.getElementById("contractorAddr").value.trim();
-  await getContract().methods.addContractor(addr).send({ from: account });
+  await sendTx(getContract().methods.addContractor(addr), { from: account });
   showMessage("Contractor added: " + addr);
   document.getElementById("pContractor").value = addr; // handy for "Create project"
 });
@@ -46,7 +46,7 @@ async function loadApplicants() {
 // Approve = register on-chain first, then mark approved on the backend.
 async function approve(btn, wallet) {
   await run(btn, async () => {
-    await getContract().methods.registerVerifier(wallet).send({ from: account });
+    await sendTx(getContract().methods.registerVerifier(wallet), { from: account });
     const res = await fetch("/applicants/" + wallet + "/approve", { method: "POST" });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Backend approve failed");
@@ -92,9 +92,9 @@ createBtn.onclick = () => run(createBtn, async () => {
   // 1. upload the details file to get its hash
   const detailsHash = await uploadFile(document.getElementById("pDetails").files[0]);
   // 2. create the project and lock the budget in the contract
-  await getContract().methods
-    .createProject(name, location, detailsHash, contractor, web3.utils.toWei(reward, "ether"))
-    .send({ from: account, value: web3.utils.toWei(budget, "ether") });
+  const tx = getContract().methods
+    .createProject(name, location, detailsHash, contractor, web3.utils.toWei(reward, "ether"));
+  await sendTx(tx, { from: account, value: web3.utils.toWei(budget, "ether") });
   showMessage("Project created: " + name);
   await loadGovernment();
 });
@@ -131,7 +131,7 @@ async function loadProjects() {
 // finalizeRound or releasePayment. All take just the project id.
 async function phase(btn, method, id) {
   await run(btn, async () => {
-    await getContract().methods[method](id).send({ from: account });
+    await sendTx(getContract().methods[method](id), { from: account });
     showMessage(method + " done for project " + id);
     await loadGovernment();
   });
@@ -156,7 +156,7 @@ async function loadReports() {
 
 async function resolveReport(btn, id) {
   await run(btn, async () => {
-    await getContract().methods.resolveReport(id).send({ from: account });
+    await sendTx(getContract().methods.resolveReport(id), { from: account });
     showMessage("Report " + id + " resolved");
     await loadGovernment();
   });

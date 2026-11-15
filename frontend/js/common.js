@@ -35,7 +35,8 @@ async function contractReady() {
   }
   const chainId = Number(await web3.eth.getChainId());
   if (chainId !== 1337) {
-    showError("MetaMask is on chain " + chainId + ". Switch MetaMask to the Ganache network (chain ID 1337).");
+    showError("MetaMask is on chain " + chainId + ". Approve the switch to Ganache (chain ID 1337) in MetaMask.");
+    await switchToGanache(); // MetaMask fires "chainChanged" and the page reloads
     return false;
   }
   const code = await web3.eth.getCode(CONTRACT_ADDRESS);
@@ -45,6 +46,25 @@ async function contractReady() {
     return false;
   }
   return true;
+}
+
+// Asks MetaMask to switch this site to Ganache (chain 1337 = 0x539).
+// If MetaMask does not know the network yet, it is added first.
+async function switchToGanache() {
+  try {
+    await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x539" }] });
+  } catch (err) {
+    if (err.code !== 4902) return; // 4902 = unknown network; anything else (e.g. user said no) we leave
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: "0x539",
+        chainName: "Ganache",
+        rpcUrls: ["http://127.0.0.1:7545"],
+        nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+      }],
+    });
+  }
 }
 
 // Asks MetaMask to connect and remembers the chosen account.
@@ -72,6 +92,16 @@ function setAccount(addr) {
 function getContract() {
   if (!contract) contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   return contract;
+}
+
+// Sends a transaction, but first runs it as a free dry run (.call) with the
+// same sender and value. If a require() would fail, the dry run throws with
+// the contract's message (e.g. "Not a contractor") and nothing is sent.
+// Without this, some MetaMask versions send the failing transaction anyway
+// and web3 only says "Transaction has been reverted by the EVM".
+async function sendTx(tx, options) {
+  await tx.call(options);
+  return tx.send(options);
 }
 
 // Wei (string or number) -> "24.5 ETH"
@@ -102,26 +132,49 @@ async function sha256OfUrl(url) {
 }
 
 // Shows an error in the red box. For failed transactions it shows
-// only the require(...) message, e.g. "Upload evidence first".
+// only the contract's require(...) message, e.g. "Upload evidence first".
 function showError(err) {
-  let msg = typeof err === "string" ? err : (err && err.message) || String(err);
-  const text = msg + " " + JSON.stringify(err && err.data ? err.data : "");
-  const patterns = [
-    /revert ([^"\\\n]+)/,                  // Ganache: "...transaction: revert Upload evidence first"
-    /reverted with reason string '([^']+)'/,
-    /execution reverted: ([^"\\\n]+)/,
-  ];
-  for (const p of patterns) {
-    const m = text.match(p);
-    if (m) { msg = m[1].trim(); break; }
-  }
-  if (err && err.code === 4001) msg = "Transaction cancelled in MetaMask";
   const box = document.getElementById("error");
   if (box) {
-    box.textContent = msg;
+    box.textContent = errorText(err);
     box.style.display = "block";
   }
   console.error(err);
+}
+
+// Turns any error (MetaMask, web3, backend, our own) into one short sentence.
+function errorText(err) {
+  if (typeof err === "string") return err;
+  const msg = (err && err.message) || String(err);
+  // MetaMask and web3 hide the real reason in different places, so search them all.
+  let text = msg;
+  try { text += "\n" + JSON.stringify([err.data, err.error, err.cause]); } catch (e) { /* ignore */ }
+
+  // 1. The require() message as text, in the forms Ganache and MetaMask use.
+  const patterns = [
+    /revert ([^"\\\n]+)/,                  // "...transaction: revert Upload evidence first"
+    /reverted with reason string '([^']+)'/,
+    /execution reverted: ([^"\\\n]+)/,
+    /"reason":"([^"]+)"/,
+  ];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m) return m[1].trim();
+  }
+  // 2. The require() message still ABI-encoded as Error(string): 0x08c379a0 + data.
+  const encoded = text.match(/0x08c379a0([0-9a-fA-F]+)/);
+  if (encoded && web3) {
+    try { return web3.eth.abi.decodeParameter("string", "0x" + encoded[1]); } catch (e) { /* ignore */ }
+  }
+  // 3. Common wallet and network problems.
+  if ((err && err.code === 4001) || /User denied|rejected/i.test(msg)) return "Transaction cancelled in MetaMask";
+  if (/insufficient funds/i.test(text)) return "Not enough ETH in this account for the amount plus gas";
+  if (/nonce/i.test(text)) return "MetaMask nonce is out of date (Ganache was reset). MetaMask -> Settings -> Advanced -> Clear activity tab data";
+  if (/Returned values aren't valid/.test(msg)) return "Could not read the contract. Check CONTRACT_ADDRESS in config.js and that MetaMask is on Ganache";
+  if (/Failed to fetch|NetworkError/i.test(msg)) return "Cannot reach the backend. Is node server.js running?";
+  if (/reverted by the EVM/.test(msg)) return "Transaction failed on the blockchain (no reason given). Check you are on the right account and step";
+  // 4. Anything else: first line only, never a JSON dump.
+  return msg.split("\n")[0].slice(0, 200);
 }
 
 // Shows a green success message.

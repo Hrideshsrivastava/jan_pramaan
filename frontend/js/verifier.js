@@ -117,7 +117,7 @@ async function assignmentCard(id, r, p, rec) {
 async function sendEvidence(btn, id) {
   await run(btn, async () => {
     const hash = await uploadFile(document.getElementById("ev-" + id).files[0]);
-    await getContract().methods.submitEvidence(id, hash).send({ from: account });
+    await sendTx(getContract().methods.submitEvidence(id, hash), { from: account });
     showMessage("Evidence submitted for project " + id);
     await loadVerifier();
   });
@@ -135,7 +135,7 @@ async function commit(btn, id, round) {
     // Save first, so the secret is never lost even if the page closes.
     localStorage.setItem(voteKey(id, round), JSON.stringify({ vote, secret }));
     try {
-      await c.methods.commitVote(id, commitment).send({ from: account });
+      await sendTx(c.methods.commitVote(id, commitment), { from: account });
     } catch (err) {
       localStorage.removeItem(voteKey(id, round)); // commit failed, forget it
       throw err;
@@ -149,7 +149,7 @@ async function reveal(btn, id) {
   await run(btn, async () => {
     const vote = Number(document.getElementById("rvote-" + id).value);
     const secret = document.getElementById("rsecret-" + id).value;
-    await getContract().methods.revealVote(id, vote, secret).send({ from: account });
+    await sendTx(getContract().methods.revealVote(id, vote, secret), { from: account });
     showMessage("Vote revealed: " + VOTE_NAMES[vote]);
     await loadVerifier();
   });
@@ -157,7 +157,7 @@ async function reveal(btn, id) {
 
 async function claim(btn, id, round) {
   await run(btn, async () => {
-    await getContract().methods.claimReward(id, round).send({ from: account });
+    await sendTx(getContract().methods.claimReward(id, round), { from: account });
     showMessage("Reward claimed for project " + id + ", round " + round);
     await loadVerifier();
   });
@@ -168,7 +168,7 @@ async function report(btn, id, round) {
   await run(btn, async () => {
     const accused = document.getElementById(`acc-${id}-${round}`).value;
     const hash = await uploadFile(document.getElementById(`reason-${id}-${round}`).files[0]);
-    await getContract().methods.fileReport(id, round, accused, hash).send({ from: account });
+    await sendTx(getContract().methods.fileReport(id, round, accused, hash), { from: account });
     showMessage("Report filed against " + accused);
     await loadVerifier();
   });
@@ -211,7 +211,7 @@ async function loadReviews() {
 
 async function voteReport(btn, id, uphold) {
   await run(btn, async () => {
-    await getContract().methods.voteOnReport(id, uphold).send({ from: account });
+    await sendTx(getContract().methods.voteOnReport(id, uphold), { from: account });
     showMessage("Your review vote is saved");
     await loadVerifier();
   });
@@ -219,7 +219,7 @@ async function voteReport(btn, id, uphold) {
 
 async function resolve(btn, id) {
   await run(btn, async () => {
-    await getContract().methods.resolveReport(id).send({ from: account });
+    await sendTx(getContract().methods.resolveReport(id), { from: account });
     showMessage("Report " + id + " resolved");
     await loadVerifier();
   });

@@ -68,6 +68,7 @@ button.danger { background: #c0392b; }
   border-radius: 4px;
   margin-bottom: 16px;
   font-weight: bold;
+  overflow-wrap: anywhere; /* long hashes never push the page sideways */
 }
 #error { background: #fdecea; color: #a12622; border: 1px solid #f5c2bd; }
 #message { background: #e8f6ec; color: #1e6b34; border: 1px solid #bfe5c9; }
