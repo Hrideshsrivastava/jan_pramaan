@@ -46,7 +46,7 @@ async function loadContractor() {
 async function submitCompletion(btn, id) {
   await run(btn, async () => {
     const hash = await uploadFile(document.getElementById("file-" + id).files[0]);
-    await getContract().methods.submitCompletion(id, hash).send({ from: account });
+    await sendTx(getContract().methods.submitCompletion(id, hash), { from: account });
     showMessage("Completion submitted for project " + id);
     await loadContractor();
   });
