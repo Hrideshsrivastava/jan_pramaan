@@ -108,7 +108,7 @@ Every assigned verifier reveals, even if not on the panel - otherwise they lose 
 
 1. Switch to one assigned verifier -> **Verifier** page -> in *Report a verifier* pick another
    assigned account, choose `reason.txt` -> **Report** -> confirm.
-2. Switch to **#0** -> **Government** -> **Release payment** -> red box: **"Open reports"**
+2. Switch to **#0** -> **Government** -> **Release payment** -> red box: **"Open reports pending"**
    (payment is blocked while a report is open).
 3. **Government** -> *Reports* table: note the report. Find the 3 reviewers on
    **Projects** -> project -> Reports, or in each verifier's *Reports I review* box.
@@ -122,7 +122,7 @@ Every assigned verifier reveals, even if not on the panel - otherwise they lose 
 2. Switch to **#0** -> **Government** -> **Release payment** -> confirm. Status `Paid`.
 3. Ganache: account #1 is up by **24.5 ETH**.
 4. Switch to two assigned verifiers in turn -> **Verifier** -> **Claim reward (0.1 ETH)** -> confirm.
-   Each gets 0.1 ETH once. (A penalized verifier gets **"Penalized"** if they try.)
+   Each gets 0.1 ETH once. (A penalized verifier gets **"You were penalized"** if they try.)
 
 ---
 

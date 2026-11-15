@@ -26,10 +26,22 @@ async function initWeb3() {
   return true;
 }
 
-// False (and an error) if config.js still has the placeholder address.
-function contractReady() {
+// Checks that MetaMask is on Ganache and that a contract really exists at
+// CONTRACT_ADDRESS. Shows a clear error and returns false if not.
+async function contractReady() {
   if (CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000") {
     showError("Paste the deployed contract address into frontend/js/config.js");
+    return false;
+  }
+  const chainId = Number(await web3.eth.getChainId());
+  if (chainId !== 1337) {
+    showError("MetaMask is on chain " + chainId + ". Switch MetaMask to the Ganache network (chain ID 1337).");
+    return false;
+  }
+  const code = await web3.eth.getCode(CONTRACT_ADDRESS);
+  if (code === "0x") {
+    showError("No contract found at " + CONTRACT_ADDRESS + " on Ganache. Deploy JanPramaan in Remix " +
+      "and paste the address of the SUCCESSFUL deploy (status 1) into frontend/js/config.js.");
     return false;
   }
   return true;
@@ -181,10 +193,10 @@ function startPage(load) {
   if (btn) {
     btn.onclick = () => run(btn, async () => {
       await connectWallet();
-      if (contractReady()) await load();
+      if (await contractReady()) await load();
     });
   }
   window.addEventListener("load", () => run(null, async () => {
-    if ((await initWeb3()) && contractReady()) await load();
+    if ((await initWeb3()) && (await contractReady())) await load();
   }));
 }
