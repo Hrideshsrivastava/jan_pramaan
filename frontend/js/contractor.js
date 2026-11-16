@@ -1,5 +1,3 @@
-// contractor.js - account #1 sees its projects and submits completion.
-
 async function loadContractor() {
   const c = getContract();
   if (!account) {
@@ -16,13 +14,12 @@ async function loadContractor() {
   let html = "";
   for (let id = 1; id <= count; id++) {
     const p = await c.methods.getProject(id).call();
-    if (!sameAddr(p.contractor, account)) continue; // only my projects
+    if (!sameAddr(p.contractor, account)) continue;
     const s = Number(p.status);
     html += `<div class="card">
       <h3>Project ${id}: ${esc(p.name)} <span class="badge s${s}">${STATUS_NAMES[s]}</span></h3>
       <p>Location: ${esc(p.location)} | Round: ${p.round} | You will get: <b>${toEth(p.contractorAmount)}</b></p>`;
     if (s === 0 || s === 5) {
-      // Created or Failed: the contractor can (re)submit a completion photo.
       if (s === 5) {
         const cost = BigInt(p.verifierCount) * BigInt(p.rewardPerVerifier);
         html += `<p class="muted">The last round failed. Fix the work and resubmit.
@@ -42,7 +39,6 @@ async function loadContractor() {
   document.getElementById("myProjects").innerHTML = html || '<p class="muted">No projects for this account.</p>';
 }
 
-// Upload the completion photo, then save its hash on-chain.
 async function submitCompletion(btn, id) {
   await run(btn, async () => {
     const hash = await uploadFile(document.getElementById("file-" + id).files[0]);

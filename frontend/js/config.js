@@ -1,11 +1,4 @@
-// Jan Pramaan frontend config.
-// After every deploy in Remix:
-//   1. Copy the JanPramaan address from "Deployed Contracts" into CONTRACT_ADDRESS.
-//   2. Copy the ABI (Solidity Compiler tab -> ABI button) and paste it over CONTRACT_ABI.
-// The ABI below was compiled from the function names in the spec, so pages work
-// before the final deploy. Replace it with the Remix ABI anyway, to be safe.
-
-const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"; // <-- paste here
+const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const CONTRACT_ABI = [
   {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"projectId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"round","type":"uint256"},{"indexed":false,"internalType":"string","name":"completionHash","type":"string"}],"name":"CompletionSubmitted","type":"event"},

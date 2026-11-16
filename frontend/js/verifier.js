@@ -1,9 +1,6 @@
-// verifier.js - accounts #2..#9: evidence, secret votes, rewards and reports.
-
 const ZERO_HASH = "0x" + "0".repeat(64);
 const VOTE_NAMES = ["-", "PASS", "FAIL"];
 
-// localStorage key for a secret vote: jp-<projectId>-<round>-<address>
 function voteKey(id, round) {
   return `jp-${id}-${round}-${account}`;
 }
@@ -30,8 +27,6 @@ async function loadVerifier() {
   await loadReviews();
 }
 
-// ---------- My assignments ----------
-// Loops every project and every round and keeps the ones where I am assigned.
 async function loadAssignments() {
   const c = getContract();
   const count = Number(await c.methods.projectCount().call());
@@ -46,7 +41,6 @@ async function loadAssignments() {
   document.getElementById("assignments").innerHTML = html || '<p class="muted">No assignments yet.</p>';
 }
 
-// Builds the box for one project + round, showing only the buttons that fit.
 async function assignmentCard(id, r, p, rec) {
   const c = getContract();
   const s = Number(p.status);
@@ -62,7 +56,6 @@ async function assignmentCard(id, r, p, rec) {
     <p class="muted">Completion file: <span class="hash">${esc(p.completionHash)}</span>
       <button class="secondary" onclick="verifyFile('${esc(p.completionHash)}', this.nextElementSibling)">Verify file</button><span></span></p>`;
 
-  // Evidence
   if (rec.evidenceHash) {
     html += `<p>Evidence sent: <span class="hash">${esc(rec.evidenceHash)}</span></p>`;
   } else if (current && s === 2) {
@@ -70,7 +63,6 @@ async function assignmentCard(id, r, p, rec) {
       <button onclick="sendEvidence(this, ${id})">Upload evidence</button></div>`;
   }
 
-  // Commit phase: choose PASS/FAIL and a secret word
   if (current && s === 2 && !committed) {
     html += `<div class="row">
       <select id="vote-${id}"><option value="1">PASS</option><option value="2">FAIL</option></select>
@@ -83,7 +75,6 @@ async function assignmentCard(id, r, p, rec) {
       <br>Write this down. You need it to reveal.</div>`;
   }
 
-  // Reveal phase
   if (current && s === 3 && committed && !rec.revealed) {
     html += `<p>${rec.onPanel ? "You are on the panel: your vote counts." : "You are not on the panel, but you must still reveal to finish your task."}</p>
       <div class="row">
@@ -95,7 +86,6 @@ async function assignmentCard(id, r, p, rec) {
   }
   if (rec.revealed) html += `<p>Revealed vote: <b>${VOTE_NAMES[rec.vote]}</b></p>`;
 
-  // After the round is finalized: reward and reports
   if (finalized) {
     if (rec.rewardClaimed) {
       html += "<p>Reward claimed.</p>";
@@ -113,7 +103,6 @@ async function assignmentCard(id, r, p, rec) {
   return html + "</div>";
 }
 
-// Upload a site photo, then save its hash on-chain.
 async function sendEvidence(btn, id) {
   await run(btn, async () => {
     const hash = await uploadFile(document.getElementById("ev-" + id).files[0]);
@@ -123,8 +112,6 @@ async function sendEvidence(btn, id) {
   });
 }
 
-// Secret vote: commitment = makeCommitment(vote, secret, me), computed by the
-// contract itself so JavaScript and Solidity always agree.
 async function commit(btn, id, round) {
   await run(btn, async () => {
     const vote = Number(document.getElementById("vote-" + id).value);
@@ -132,12 +119,11 @@ async function commit(btn, id, round) {
     if (!secret) throw new Error("Type a secret word first");
     const c = getContract();
     const commitment = await c.methods.makeCommitment(vote, secret, account).call();
-    // Save first, so the secret is never lost even if the page closes.
     localStorage.setItem(voteKey(id, round), JSON.stringify({ vote, secret }));
     try {
       await sendTx(c.methods.commitVote(id, commitment), { from: account });
     } catch (err) {
-      localStorage.removeItem(voteKey(id, round)); // commit failed, forget it
+      localStorage.removeItem(voteKey(id, round));
       throw err;
     }
     showMessage(`Vote committed. Your secret is "${secret}". Write it down!`);
@@ -163,7 +149,6 @@ async function claim(btn, id, round) {
   });
 }
 
-// Upload the reason file, then file the report on-chain.
 async function report(btn, id, round) {
   await run(btn, async () => {
     const accused = document.getElementById(`acc-${id}-${round}`).value;
@@ -174,7 +159,6 @@ async function report(btn, id, round) {
   });
 }
 
-// ---------- Reports I review ----------
 async function loadReviews() {
   const c = getContract();
   const count = Number(await c.methods.reportCount().call());

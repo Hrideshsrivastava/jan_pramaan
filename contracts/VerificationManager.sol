@@ -3,9 +3,7 @@ pragma solidity ^0.8.19;
 
 import "./JPStorage.sol";
 
-/// @notice Runs the verifier commit/reveal process for project completion.
 contract VerificationManager is JPStorage {
-    /// @notice Assign eligible verifiers to the current verification round.
     function startVerification(uint projectId) external onlyAdmin projectExists(projectId) {
         Project storage p = projects[projectId];
         require(p.status == Status.CompletionClaimed, "Project not ready");
@@ -18,7 +16,6 @@ contract VerificationManager is JPStorage {
             projectId * 1000 + round
         );
 
-        // Save the assignment both in each verifier's record and the round list.
         for (uint i = 0; i < chosen.length; i++) {
             records[projectId][round][chosen[i]].assigned = true;
             assigned[projectId][round].push(chosen[i]);
@@ -28,7 +25,6 @@ contract VerificationManager is JPStorage {
         emit VerifiersAssigned(projectId, round, chosen);
     }
 
-    /// @notice Store a verifier's evidence hash during the commit phase.
     function submitEvidence(uint projectId, string memory evidenceHash)
         external
         projectExists(projectId)
@@ -46,7 +42,6 @@ contract VerificationManager is JPStorage {
         emit EvidenceSubmitted(projectId, round, msg.sender, evidenceHash);
     }
 
-    /// @notice Lock a verifier's hidden vote commitment during the commit phase.
     function commitVote(uint projectId, bytes32 commitment)
         external
         projectExists(projectId)
@@ -59,7 +54,6 @@ contract VerificationManager is JPStorage {
         require(r.assigned, "Not assigned");
         require(bytes(r.evidenceHash).length > 0, "Upload evidence first");
 
-        // Check the list so even a zero-valued commitment cannot be submitted twice.
         address[] storage list = committers[projectId][round];
         for (uint i = 0; i < list.length; i++) {
             require(list[i] != msg.sender, "Already committed");
@@ -70,7 +64,6 @@ contract VerificationManager is JPStorage {
         emit VoteCommitted(projectId, round, msg.sender);
     }
 
-    /// @notice Select a random deciding panel from verifiers who committed.
     function closeCommitPhase(uint projectId) external onlyAdmin projectExists(projectId) {
         Project storage p = projects[projectId];
         require(p.status == Status.Commit, "Not in commit phase");
@@ -82,7 +75,6 @@ contract VerificationManager is JPStorage {
 
         uint panelSize = committerCount < PANEL_SIZE ? committerCount : PANEL_SIZE;
 
-        // _pickRandom reorders its input, so pass it a fresh memory copy.
         address[] memory copy = new address[](committerCount);
         for (uint i = 0; i < committerCount; i++) {
             copy[i] = storedCommitters[i];
@@ -102,7 +94,6 @@ contract VerificationManager is JPStorage {
         emit PanelSelected(projectId, round, chosen);
     }
 
-    /// @notice Reveal a committed vote and verify it matches its commitment.
     function revealVote(uint projectId, uint8 vote, string memory secret)
         external
         projectExists(projectId)
@@ -134,7 +125,6 @@ contract VerificationManager is JPStorage {
         emit VoteRevealed(projectId, round, msg.sender, vote);
     }
 
-    /// @notice Decide the round and update reputation for every assigned verifier.
     function finalizeRound(uint projectId) external onlyAdmin projectExists(projectId) {
         Project storage p = projects[projectId];
         require(p.status == Status.Reveal, "Not in reveal phase");

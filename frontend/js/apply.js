@@ -1,8 +1,5 @@
-// apply.js - a citizen applies to become a verifier.
-// This page only talks to the backend (POST /apply). Nothing goes on-chain here.
-
 async function submitApplication(event) {
-  event.preventDefault(); // stop the normal form reload
+  event.preventDefault();
   const btn = document.getElementById("applyBtn");
   await run(btn, async () => {
     const body = {
@@ -25,12 +22,10 @@ async function submitApplication(event) {
 
 document.getElementById("applyForm").addEventListener("submit", submitApplication);
 
-// Fill the wallet box with the connected MetaMask account.
 async function fillWallet() {
   if (account) document.getElementById("wallet").value = account;
 }
 
-// This page does not need the contract, so it does not use startPage().
 document.getElementById("connectBtn").onclick = (e) =>
   run(e.target, async () => {
     await connectWallet();

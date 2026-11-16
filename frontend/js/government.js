@@ -1,6 +1,3 @@
-// government.js - account #0 (admin) runs the whole process from here.
-
-// Loads everything on the page.
 async function loadGovernment() {
   const c = getContract();
   const admin = await c.methods.admin().call();
@@ -20,16 +17,14 @@ async function loadGovernment() {
   updatePreview();
 }
 
-// ---------- Contractors ----------
 const addContractorBtn = document.getElementById("addContractorBtn");
 addContractorBtn.onclick = () => run(addContractorBtn, async () => {
   const addr = document.getElementById("contractorAddr").value.trim();
   await sendTx(getContract().methods.addContractor(addr), { from: account });
   showMessage("Contractor added: " + addr);
-  document.getElementById("pContractor").value = addr; // handy for "Create project"
+  document.getElementById("pContractor").value = addr;
 });
 
-// ---------- Verifier applications ----------
 async function loadApplicants() {
   const res = await fetch("/applicants");
   const list = await res.json();
@@ -43,7 +38,6 @@ async function loadApplicants() {
     rows.join("") || '<tr><td colspan="6" class="muted">No applications</td></tr>';
 }
 
-// Approve = register on-chain first, then mark approved on the backend.
 async function approve(btn, wallet) {
   await run(btn, async () => {
     await sendTx(getContract().methods.registerVerifier(wallet), { from: account });
@@ -69,8 +63,6 @@ async function loadVerifiers() {
     rows.join("") || '<tr><td colspan="4" class="muted">No verifiers yet</td></tr>';
 }
 
-// ---------- Create project ----------
-// Shows N and the contractor amount before sending (same maths as the contract).
 function updatePreview() {
   const budget = Number(document.getElementById("pBudget").value);
   const reward = Number(document.getElementById("pReward").value);
@@ -89,9 +81,7 @@ createBtn.onclick = () => run(createBtn, async () => {
   const contractor = document.getElementById("pContractor").value.trim();
   const budget = document.getElementById("pBudget").value;
   const reward = document.getElementById("pReward").value;
-  // 1. upload the details file to get its hash
   const detailsHash = await uploadFile(document.getElementById("pDetails").files[0]);
-  // 2. create the project and lock the budget in the contract
   const tx = getContract().methods
     .createProject(name, location, detailsHash, contractor, web3.utils.toWei(reward, "ether"));
   await sendTx(tx, { from: account, value: web3.utils.toWei(budget, "ether") });
@@ -99,7 +89,6 @@ createBtn.onclick = () => run(createBtn, async () => {
   await loadGovernment();
 });
 
-// ---------- Projects and phase buttons ----------
 async function loadProjects() {
   const c = getContract();
   const count = Number(await c.methods.projectCount().call());
@@ -108,7 +97,6 @@ async function loadProjects() {
     const p = await c.methods.getProject(id).call();
     const open = await c.methods.openReports(id).call();
     const s = Number(p.status);
-    // Only the button for the next step is shown.
     let actions = "";
     if (s === 1) actions = `<button onclick="phase(this, 'startVerification', ${id})">Start verification</button>`;
     if (s === 2) {
@@ -127,8 +115,6 @@ async function loadProjects() {
     rows.join("") || '<tr><td colspan="7" class="muted">No projects yet</td></tr>';
 }
 
-// Calls one of the phase functions: startVerification, closeCommitPhase,
-// finalizeRound or releasePayment. All take just the project id.
 async function phase(btn, method, id) {
   await run(btn, async () => {
     await sendTx(getContract().methods[method](id), { from: account });
@@ -137,7 +123,6 @@ async function phase(btn, method, id) {
   });
 }
 
-// ---------- Reports ----------
 async function loadReports() {
   const c = getContract();
   const count = Number(await c.methods.reportCount().call());

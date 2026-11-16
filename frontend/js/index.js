@@ -1,8 +1,5 @@
-// index.js - public list of projects. Anyone can view and verify files.
+const VOTE_NAMES = ["-", "PASS", "FAIL"];
 
-const VOTE_NAMES = ["-", "PASS", "FAIL"]; // enum Vote { None, Pass, Fail }
-
-// Builds a hash cell with a "Verify file" button.
 function hashCell(hash) {
   if (!hash) return '<span class="muted">none</span>';
   return `<span class="hash">${esc(hash)}</span><br>
@@ -10,7 +7,6 @@ function hashCell(hash) {
     <a href="/files/${esc(hash)}" target="_blank">open</a>`;
 }
 
-// Loads every project (ids 1..projectCount) into the table.
 async function loadProjects() {
   const c = getContract();
   const count = Number(await c.methods.projectCount().call());
@@ -27,7 +23,6 @@ async function loadProjects() {
     rows.join("") || '<tr><td colspan="6" class="muted">No projects yet</td></tr>';
 }
 
-// Shows full details of one project: every round, then its reports.
 async function showProject(id) {
   await run(null, async () => {
     const c = getContract();
@@ -45,7 +40,6 @@ async function showProject(id) {
       <tr><th>Latest completion file</th><td>${hashCell(p.completionHash)}</td></tr>
     </table>`;
 
-    // One section per round, newest first.
     for (let r = Number(p.round); r >= 1; r--) {
       const assigned = await c.methods.getAssigned(id, r).call();
       const panel = await c.methods.getPanel(id, r).call();
@@ -61,7 +55,6 @@ async function showProject(id) {
       for (const v of assigned) {
         const rec = await c.methods.getRecord(id, r, v).call();
         const committed = rec.commitment !== "0x" + "0".repeat(64);
-        // The vote stays hidden until the verifier reveals it.
         const vote = rec.revealed ? `<b>${VOTE_NAMES[rec.vote]}</b>` : (committed ? "hidden" : "-");
         html += `<tr><td class="mono">${v}</td><td>${hashCell(rec.evidenceHash)}</td>
           <td>${committed ? "yes" : "no"}</td><td>${rec.onPanel ? "yes" : "no"}</td><td>${vote}</td></tr>`;
@@ -69,7 +62,6 @@ async function showProject(id) {
       html += "</table>";
     }
 
-    // Reports filed about this project.
     const reportCount = Number(await c.methods.reportCount().call());
     let reportHtml = "";
     for (let i = 1; i <= reportCount; i++) {
